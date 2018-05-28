@@ -76,6 +76,7 @@ class DDPG(object):
                       feed_dict={self.critic_net.state:state0, \
                                  self.critic_net.action:action0, \
                                  self.actor_net.state:state0})
+        self.sess.run(self.assign_target_soft)
     
     def load(self,saved_variables):
         self.sess.run( \
