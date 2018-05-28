@@ -1,30 +1,34 @@
 from __future__ import print_function
 from agent.ddpg import DDPG
 from configuration import config
-from environment import turtlebot_obstacle_avoidance
+from environment import Turtlebot_obstacles
+# from environment.turtlebot import Turtlebot
+import time
+import numpy as np
 
+env=Turtlebot_obstacles(config)
+agent=DDPG(config)
 
-# env=environment
-network=DDPG(config)
-    
-def train(self, savedir):
-    for episode in range(self.config.max_episode):
-        self.env.start()
+env.launch()
+
+def train():
+    for episode in range(config.max_episode):
+        env.reset()
         print('Episode:',episode)
-        state=self.env.step([0,0])
-        self.env.pause()
-        for step in range(self.config.max_step):
-            action=self.network.policy(state)
-            self.env.start()
-            state=self.env.step(action)
-            self.env.pause()
-            [state0,state1,reward]=self.env.batch()
-            self.network.update(
-                state0,action,reward,state1)
+        env.start()
+        state=env.step([0,0])
+        # print(state)
+        for step in range(config.max_step):
+            action=agent.policy(state.reshape([1,36]))
+            state=env.step(action.reshape([2]))
+            # print(state)
+            # [state0,action,reward,state1]=env.batch()
+            # agent.update(
+            #     state0,action,reward,state1)
     
-def test(self, savedir):
-    traj=None
-    return traj
+# def test(self, savedir):
+#     traj=None
+#     return traj
 
-
+train()
 # env.launch()

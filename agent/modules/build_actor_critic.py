@@ -13,7 +13,12 @@ class Build_network(object):
             for layer in zip(config.layers[:-1],config.layers[1:]):
                 layers.append(list(layer))
             if name[0]=='a':
+                # config.action_dim=len(config.action_bounds[0])
                 layers.append([config.layers[-1],config.action_dim])
+                a_scale=tf.subtract(
+                    config.action_bounds[0],config.action_bounds[1])/2.0
+                a_mean=tf.add(
+                    config.action_bounds[0],config.action_bounds[1])/2.0
             else:
                 layers.append([config.layers[-1],1])
                 layers[1][0]+=config.action_dim
@@ -27,11 +32,8 @@ class Build_network(object):
             out_=self.layer_fc(out_,'fc1')
             for layer in range(2,len(layers)):
                 out_=self.layer_fc(tf.nn.relu(out_),'fc'+str(layer))
-            if name[0]=='a':
-                out_0,out_1=tf.split(out_,[1,1],axis=1)
-                self.out_=tf.concat([tf.sigmoid(out_0),tf.tanh(out_1)],1)
-            else:
-                self.out_=out_    
+            self.out_= \
+            tf.multiply(tf.tanh(out_),a_scale)+a_mean if name[0]=='a' else out_
 
     def evaluate(self,state,action=None):
         return self.sess.run(self.out_, \

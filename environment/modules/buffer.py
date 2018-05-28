@@ -6,13 +6,17 @@ class Buffer(object):
     def __init__(self,size):
         self.size=size
         self.currentPosition=-1
-        self.memory=[]
+        self.state0=[]
+        self.state1=[]
+        self.reward=[]
+        self.action=[]
+        self.done=[]
 
     def batch(self,size):
-        indices=random.sample(arange(len(self.memory)),min(size,len(self.memory)))
+        indices=random.sample(arange(len(self.state0)),min(size,len(self.state0)))
         Batch = []
         for idx in indices:
-            Batch.append(self.memory[idx])
+            Batch.append([self.state0[idx],self.action[idx],self.reward[idx],self.state1[idx]])
         return Batch
 
     def add(self,element):
