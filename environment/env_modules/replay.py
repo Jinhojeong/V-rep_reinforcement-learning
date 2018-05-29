@@ -5,20 +5,32 @@ class Replay(object):
     def __init__(self,size):
         self.size=size
         self.currentPosition=-1
-        self.buffer=[]
+        self.buffer={'state0':[],'state1':[],'action':[],'reward':[],'done':[]}
+        self.max=False
 
     def batch(self,size):
-        return random.choice(self.buffer)
+        if len(self.buffer)>size:
+            indices=random.choice(range(len(self.buffer)),size,replace=False)
+            Batch={'state0':[],'state1':[],'action':[],'reward':[],'done':[]}
+            for name in self.buffer.keys():
+                [Batch[name].append(self.buffer[name][idx]) for idx in indices]
+            return Batch
+        else:
+            return self.buffer
 
     def add(self,experience):
         if (self.currentPosition>=self.size-1):
-            self.currentPosition = 0
-        if (len(self.buffer)>self.size-1):
-            self.memory[self.currentPosition]=experience
+            self.currentPosition=0
+            self.max=True
+        if self.max:
+            self.memory[idx][self.currentPosition]=experience[idx]
         else:
-            self.memory.append(experience)
+            for name in experience.keys():
+                self.memory[name].append(experience[name])
         self.currentPosition+=1
     
     def clear(self):
         self.currentPosition=-1
-        self.memory=[]
+        self.buffersize=0
+        self.buffer={'state0':[],'state1':[],'action':[],'reward':[],'done':[]}
+        self.max=False
