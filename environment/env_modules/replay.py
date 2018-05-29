@@ -13,7 +13,8 @@ class Replay(object):
             indices=random.choice(range(len(self.buffer)),size,replace=False)
             Batch={'state0':[],'state1':[],'action':[],'reward':[],'done':[]}
             for name in self.buffer.keys():
-                [Batch[name].append(self.buffer[name][idx]) for idx in indices]
+                for idx in indices:
+                    Batch[name].append(self.buffer[name][idx])
             return Batch
         else:
             return self.buffer
