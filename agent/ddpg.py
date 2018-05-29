@@ -63,19 +63,19 @@ class DDPG(object):
     def reset(self):
         self.sess.run(self.var_init)
 
-    def update(self,state0,action0,reward,state1,done):
-        target_action=self.actor_target.evaluate(state1)
-        target_q=self.critic_target.evaluate(state1,target_action)
+    def update(self,batch):
+        target_action=self.actor_target.evaluate(batch['state1'])
+        target_q=self.critic_target.evaluate(batch['state1'],target_action)
         self.sess.run(self.update_critic, \
-                      feed_dict={self.critic_net.state:state0, \
-                                 self.critic_net.action:action0, \
-                                 self.reward:reward, \
+                      feed_dict={self.critic_net.state:batch['state0'], \
+                                 self.critic_net.action:batch['action0'], \
+                                 self.reward:batch['reward'], \
                                  self.target_q:target_q, \
-                                 self.done:done})
+                                 self.done:batch['done']})
         self.sess.run(self.update_actor, \
-                      feed_dict={self.critic_net.state:state0, \
-                                 self.critic_net.action:action0, \
-                                 self.actor_net.state:state0})
+                      feed_dict={self.critic_net.state:batch['state0'], \
+                                 self.critic_net.action:batch['action0'], \
+                                 self.actor_net.state:batch['state0']})
         self.sess.run(self.assign_target_soft)
     
     def load(self,saved_variables):

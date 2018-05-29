@@ -7,7 +7,7 @@ import numpy as np
 from collections import deque
 
 import vrep
-from buffer import Buffer
+from replay import Replay
 
 class Core(object):
 
@@ -19,9 +19,8 @@ class Core(object):
         self.clientID=None
         self.scene=scene
         self.dt=config.dt
-        self.buffer=Buffer(config.max_buffer)
+        self.replay=Replay(config.max_buffer,config.batch_size)
         self.batch_size=config.batch_size
-        self.state=None
 
     def vrep_launch(self):
         if self.autolaunch:
@@ -44,21 +43,21 @@ class Core(object):
             self.clientID,vrep.simx_opmode_blocking)
         vrep.simxSynchronous(self.clientID, True)
     
-    def reset(self):
+    def vrep_reset(self):
         vrep.simxStopSimulation(
             self.clientID,vrep.simx_opmode_oneshot)
-        time.sleep(0.2)
+        time.sleep(0.1)
     
     def pause(self):
         vrep.simxPauseSimulation(
-            self.clientID,vrep.simx_opmode_blocking)
+            self.clientID,vrep.simx_opmode_oneshot)
     
     def close(self):
-        self.reset()
+        self.vrep_reset()
         while vrep.simxGetConnectionId(self.clientID) != -1:
             vrep.simxSynchronousTrigger(self.clientID)
         vrep.simxFinish(self.clientID)
-        self.buffer.clear()
+        self.replay.clear()
 
 if __name__ == '__main__':
     env = Core(None,None)
