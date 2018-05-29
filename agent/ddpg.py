@@ -1,6 +1,6 @@
 import tensorflow as tf
-from modules.build_actor_critic import Build_network
-from modules.additional_functions import l2_regularizer,gradient_inverter
+from agent_modules.build_actor_critic import Build_network
+from agent_modules.additional_functions import l2_regularizer,gradient_inverter
 
 
 class DDPG(object):

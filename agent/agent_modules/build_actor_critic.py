@@ -6,7 +6,7 @@ class Build_network(object):
     def __init__(self,sess,config,name):
         self.name=name
         self.sess=sess
-        self.trainable=False if name.split('_')=='target' else True
+        self.trainable=False if name.split('_')[1]=='target' else True
         with tf.name_scope(name):
             self.state=tf.placeholder(tf.float32,[None,config.state_dim])
             layers=[[config.state_dim,config.layers[0]]]

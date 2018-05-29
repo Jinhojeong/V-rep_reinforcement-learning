@@ -1,7 +1,7 @@
 from __future__ import print_function
 from agent.ddpg import DDPG
 from configuration import config
-from environment import Turtlebot_obstacles
+from environment.turtlebot_obstacles import Turtlebot_obstacles
 # from environment.turtlebot import Turtlebot
 import time
 import numpy as np
