@@ -23,10 +23,11 @@ class Replay(object):
             self.currentPosition=0
             self.max=True
         if self.max:
-            self.memory[idx][self.currentPosition]=experience[idx]
+            for name in self.buffer.keys():
+                self.buffer[name][self.currentPosition]=experience[name]
         else:
             for name in experience.keys():
-                self.memory[name].append(experience[name])
+                self.buffer[name].append(experience[name])
         self.currentPosition+=1
     
     def clear(self):
