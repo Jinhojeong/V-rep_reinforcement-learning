@@ -1,6 +1,7 @@
 import tensorflow as tf
 from agent_modules.build_actor_critic import Build_network
 from agent_modules.additional_functions import l2_regularizer,gradient_inverter
+from agent_modules.ou_noise import OUNoise
 
 
 class DDPG(object):
@@ -14,6 +15,7 @@ class DDPG(object):
         self.reward=tf.placeholder(tf.float32,[None,1])
         self.done=tf.placeholder(tf.float32,[None,1])
         self.target_q=tf.placeholder(tf.float32,[None,1])
+        self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
         # build network
         self.actor_net=Build_network(self.sess,config,'actor_net')
         self.actor_target=Build_network(self.sess,config,'actor_target')
@@ -53,12 +55,18 @@ class DDPG(object):
                 config.tau*self.critic_net.variables[var.replace('_target','_net')]+ \
                 (1-config.tau)*self.critic_target.variables[var] \
             ) for var in self.critic_target.variables.keys()]
+        # add noise
+        self.action=tf.multiply(
+            tf.nn.tanh(self.actor_net.out_before_activation+self.noise), \
+            self.actor_net.a_scale)+self.actor_net.a_mean
         # initialize variables
         self.sess.run(self.var_init)
         self.sess.run(self.assign_target)
+        self.ou=OUNoise(config.action_dim)
 
-    def policy(self,state):
-        return self.actor_net.evaluate(state)
+    def policy(self,state,epsilon=1):
+        return self.sess.run(self.action, \
+            feed_dict={self.actor_net.state:state,self.noise:epsilon*self.ou.noise()})
     
     def reset(self):
         self.sess.run(self.var_init)

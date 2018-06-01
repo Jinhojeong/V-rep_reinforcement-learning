@@ -27,7 +27,7 @@ def train():
                 agent.update(batch)
             if done==0:
                 break
-        if step==config.max_step-1:
+        if step>=config.max_step-1:
             print(' | Timeout')
     
 # def test(self, savedir):

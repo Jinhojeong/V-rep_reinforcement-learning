@@ -14,9 +14,9 @@ class Settings(object):
         self.tau=1e-3
         self.l2_penalty=1e-4
         self.max_buffer=1e+5
-        self.batch_size=64
-        self.max_step=100
-        self.max_episode=1500
+        self.batch_size=100
+        self.max_step=500
+        self.max_episode=2000
         self.reward_param=0.0
         self.vrep_path='/opt/vrep'
         self.autolaunch=True
