@@ -22,11 +22,11 @@ class Settings(object):
         self.max_episode=1500
         self.reward_param=0.0
         self.vrep_path='/home/jinhojeong/Downloads/V-REP_PRO_EDU_V3_5_0_Linux'
-        self.autolaunch=True
+        self.autolaunch=False
         self.visualization=True
         self.solver='bullet'
-        self.dt=100
-        self.api_port=20000
+        self.dt=50
+        self.api_port=19997
         
 
 config=Settings()

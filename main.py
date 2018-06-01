@@ -18,17 +18,16 @@ def train():
         env.reset()
         print('Episode:',episode)
         env.start()
-        time.sleep(0.1)
         state0,reward,done=env.step(3)
-        for step in range(config.max_step):
+        while done==0:
             action=agent.chooseAction(state0)
             state1,reward,done=env.step(action)
             agent.learn(state0,action,reward,state1)
             state0=state1
-            if done==1:
-                break
-        if step==config.max_step-1:
-            print(' | Timeout')
+            # if done==1:
+            #     break
+        # if step==config.max_step-1:
+        #     print(' | Timeout')
     
 # def test(self, savedir):
 #     traj=None
