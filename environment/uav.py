@@ -49,7 +49,9 @@ class UAV(Core):
         t=vrep.simxGetLastCmdTime(self.clientID)
         vrep.simxSynchronousTrigger(self.clientID)
         while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:
-            self.controller(3)
+            pose=vrep.simxGetObjectPosition(self.clientID, \
+                self.body_handle,-1,vrep.simx_opmode_oneshot)[1]
+        self.r=linalg.norm(pose)    
     
     def reward(self, r, r_dot):
         return exp(-linalg.norm([r-0.3,r_dot])**2)
@@ -60,23 +62,16 @@ class UAV(Core):
         vrep.simxSynchronousTrigger(self.clientID)
         while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:            
             pose=vrep.simxGetObjectPosition(self.clientID, \
-                self.body_handle,-1,vrep.simx_opmode_oneshot)[1]
+                self.body_handle,-1,vrep.simx_opmode_oneshot)[1][1:3]
             orientation=vrep.simxGetObjectOrientation(self.clientID, \
                 self.body_handle,-1,vrep.simx_opmode_oneshot)[1][2]
-            goal_pose=vrep.simxGetObjectPosition(self.clientID, \
-                self.goal_handle,self.body_handle,vrep.simx_opmode_oneshot)[1][1:3]
-            vrep.simxGetObjectVelocity(self.clientID, \
-                self.body_handle,vrep.simx_opmode_oneshot)
-        r=linalg.norm(goal_pose)
-        goal_angle=arctan2(-goal_pose[0],goal_pose[1])
-        if self.state0==None:
-            self.state0=round(r*10)
-            r_dot=0.0
-        else:
-            r_dot=(r-self.r)/self.dt
+            vel=vrep.simxGetObjectVelocity(self.clientID, \
+                self.body_handle,vrep.simx_opmode_oneshot)[1][1:3]
+        r=linalg.norm(pose)
+        r_dot=(r-self.r)/self.dt
         sys.stderr.write('\r| r=% 2.1f,r_dot=% 2.1f'%(r,r_dot))
         state1=round(r*10)*11+round(r_dot*10-5)
-        if r>2.5:
+        if r>5:
             done=1
             print(' | Fail')
         else:
