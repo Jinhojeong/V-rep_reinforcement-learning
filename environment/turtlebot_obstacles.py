@@ -20,7 +20,7 @@ class Turtlebot_obstacles(Core):
             os.path.join(scene_dir,'turtlebot_obstacles.ttt'))
         self.d=0.115
         self.r=0.035
-        self.goal_set=[[1,1],[1,2],[1,0],[1,-1]]
+        self.goal_set=[[0,0]]
         self.state0=None
         self.action_prev=[0.0,0.0]
     
@@ -38,7 +38,7 @@ class Turtlebot_obstacles(Core):
     
     def reset(self):
         self.vrep_reset()
-        self.goal=choice(self.goal_set)
+        self.goal=self.goal_set
         vrep.simxSetObjectPosition(self.clientID, \
             self.goal_handle,-1,self.goal+[0],vrep.simx_opmode_oneshot)
         self.state0=None

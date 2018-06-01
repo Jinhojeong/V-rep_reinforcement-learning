@@ -2,14 +2,14 @@ from __future__ import print_function
 import sys
 from configuration import config
 
-from agent.ddpg import DDPG
-from environment.turtlebot_obstacles import Turtlebot_obstacles
+from agent.qlearn import QLearn
+from environment.uav import UAV
 
 import time
 from numpy import reshape
 
-env=Turtlebot_obstacles(config)
-agent=DDPG(config)
+env=UAV(config)
+agent=QLearn(config)
 
 env.launch()
 
@@ -18,14 +18,14 @@ def train():
         env.reset()
         print('Episode:',episode)
         env.start()
-        state,done=env.step([0,0])
+        time.sleep(0.1)
+        state0,reward,done=env.step(3)
         for step in range(config.max_step):
-            action=agent.policy(reshape(state,[1,config.state_dim]))
-            state,done=env.step(reshape(action,[config.action_dim]))
-            if env.replay.buffersize>10:
-                batch=env.replay.batch()
-                agent.update(batch)
-            if done==0:
+            action=agent.chooseAction(state0)
+            state1,reward,done=env.step(action)
+            agent.learn(state0,action,reward,state1)
+            state0=state1
+            if done==1:
                 break
         if step==config.max_step-1:
             print(' | Timeout')

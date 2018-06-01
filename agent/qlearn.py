@@ -1,12 +1,13 @@
 import random
+from configuration import config
 
 class QLearn:
-    def __init__(self, actions, epsilon, alpha, gamma):
+    def __init__(self, config):
         self.q = {}
-        self.epsilon = epsilon  # exploration constant
-        self.alpha = alpha      # discount constant
-        self.gamma = gamma      # discount factor
-        self.actions = actions
+        self.epsilon = config.epsilon  # exploration constant
+        self.alpha = config.alpha      # discount constant
+        self.gamma = config.gamma      # discount factor
+        self.actions = range(config.actions)
 
     def getQ(self, state, action):
         return self.q.get((state, action), 0.0)
