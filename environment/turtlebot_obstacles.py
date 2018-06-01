@@ -45,19 +45,23 @@ class Turtlebot_obstacles(Core):
         self.action_prev=[0.0,0.0]
         time.sleep(0.2)
     
+    def start(self):
+        self.vrep_start()
+        t=vrep.simxGetLastCmdTime(self.clientID)
+        vrep.simxSynchronousTrigger(self.clientID)
+        self.controller([0.0,0.0])
+        while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:
+            lrf_bin=vrep.simxGetStringSignal(self.clientID, \
+                'hokuyo_data',vrep.simx_opmode_streaming)[1]
+    
     def reward(self):
         return 0
     
     def step(self,action):
-        vel_right=2.0*(action[0]+self.d*action[1])/self.r
-        vel_left=2.0*(action[0]-self.d*action[1])/self.r
+        self.controller(action)
         t=vrep.simxGetLastCmdTime(self.clientID)
         vrep.simxSynchronousTrigger(self.clientID)
         while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:
-            vrep.simxSetJointTargetVelocity(self.clientID, \
-                self.joint_handles[0],vel_right,vrep.simx_opmode_streaming)
-            vrep.simxSetJointTargetVelocity(self.clientID, \
-                self.joint_handles[1],vel_left,vrep.simx_opmode_streaming)
             pose=vrep.simxGetObjectPosition(self.clientID, \
                 self.body_handle,-1,vrep.simx_opmode_oneshot)[1]
             orientation=vrep.simxGetObjectOrientation(self.clientID, \
@@ -91,3 +95,11 @@ class Turtlebot_obstacles(Core):
                              'done':done})
         self.state0=state1
         self.action_prev=action
+    
+    def controller(self,action):
+        vel_right=2.0*(action[0]+self.d*action[1])/self.r
+        vel_left=2.0*(action[0]-self.d*action[1])/self.r
+        vrep.simxSetJointTargetVelocity(self.clientID, \
+            self.joint_handles[0],vel_right,vrep.simx_opmode_streaming)
+        vrep.simxSetJointTargetVelocity(self.clientID, \
+            self.joint_handles[1],vel_left,vrep.simx_opmode_streaming)
