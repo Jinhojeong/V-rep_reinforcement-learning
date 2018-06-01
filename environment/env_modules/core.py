@@ -38,7 +38,7 @@ class Core(object):
         self.clientID=vrep.simxStart(
             '127.0.0.1',self.port,True,True,5000,5)
     
-    def start(self):
+    def vrep_start(self):
         vrep.simxStartSimulation(
             self.clientID,vrep.simx_opmode_blocking)
         vrep.simxSynchronous(self.clientID, True)

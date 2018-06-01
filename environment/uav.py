@@ -42,7 +42,14 @@ class UAV(Core):
         #     self.body_handle,-1,self.pos+[0],vrep.simx_opmode_oneshot)
         self.state0=None
         self.action_prev=3
-        time.sleep(0.3)
+        time.sleep(0.2)
+    
+    def start(self):
+        self.vrep_start()
+        t=vrep.simxGetLastCmdTime(self.clientID)
+        vrep.simxSynchronousTrigger(self.clientID)
+        while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:
+            self.controller(3)
     
     def reward(self, r, r_dot):
         return exp(-linalg.norm([r-0.3,r_dot])**2)
@@ -58,8 +65,8 @@ class UAV(Core):
                 self.body_handle,-1,vrep.simx_opmode_oneshot)[1][2]
             goal_pose=vrep.simxGetObjectPosition(self.clientID, \
                 self.goal_handle,self.body_handle,vrep.simx_opmode_oneshot)[1][1:3]
-        goal_pose=vrep.simxGetObjectPosition(self.clientID, \
-            self.goal_handle,self.body_handle,vrep.simx_opmode_oneshot)[1][1:3]
+            vrep.simxGetObjectVelocity(self.clientID, \
+                self.body_handle,vrep.simx_opmode_oneshot)
         r=linalg.norm(goal_pose)
         goal_angle=arctan2(-goal_pose[0],goal_pose[1])
         if self.state0==None:
