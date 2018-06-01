@@ -85,7 +85,7 @@ class Turtlebot_obstacles(Core):
         state1+=[goal_dist*cos(goal_angle)/5.578,goal_dist*sin(goal_angle)/5.578] \
                 if goal_dist<5.578 else \
                 [cos(goal_angle),sin(goal_angle)]
-        if min(lrf)<0.2:
+        if min(lrf)<0.0358:
             done=0
             print(' | Fail')
         elif goal_dist<0.1:
