@@ -11,7 +11,7 @@ from env_modules.core import Core
 scene_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),'scenes')
 
 
-class Turtlebot_obstacles(Core):
+class UAV(Core):
 
     def __init__(self,config):
         Core.__init__(
