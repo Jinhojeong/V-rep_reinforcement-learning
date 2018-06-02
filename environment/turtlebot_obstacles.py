@@ -2,7 +2,7 @@ from __future__ import print_function
 import os
 import sys
 import time
-from numpy import array,reshape,linalg,arctan2,sin,cos
+from numpy import array,reshape,linalg,arctan2,pi
 from random import choice
 from env_modules import vrep
 from env_modules.core import Core
@@ -25,6 +25,8 @@ class Turtlebot_obstacles(Core):
         self.state0=None
         self.reward_param=config.reward_param
         self.action_prev=[0.0,0.0]
+        self.count=0
+        self.reward_sum=0.0
     
     def launch(self):
         self.vrep_launch()
@@ -46,6 +48,8 @@ class Turtlebot_obstacles(Core):
         self.state0=None
         self.action_prev=[0.0,0.0]
         self.goal_dist_prev=None
+        self.count=0
+        self.reward_sum=0.0
         time.sleep(0.2)
     
     def start(self):
@@ -58,9 +62,12 @@ class Turtlebot_obstacles(Core):
                 'hokuyo_data',vrep.simx_opmode_streaming)[1]
     
     def reward(self,lrf,goal_dist,action):
-        return 20*(self.goal_dist_prev-goal_dist)-((1/min(lrf)-1)**2)/100-self.reward_param*(1+action[1]**2)
+        return 20*(self.goal_dist_prev-goal_dist) \
+               -(1/min(lrf)-1)/10.0 \
+               -self.reward_param*(1+action[1]**2)
     
     def step(self,action):
+        self.count+=1
         self.controller(action)
         t=vrep.simxGetLastCmdTime(self.clientID)
         vrep.simxSynchronousTrigger(self.clientID)
@@ -79,23 +86,25 @@ class Turtlebot_obstacles(Core):
         goal_dist=linalg.norm(goal_pos)
         goal_angle=arctan2(-goal_pos[0],goal_pos[1])
         # print(vel)
-        sys.stderr.write('\r| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
-                            %(self.goal[0],self.goal[1],pose[0],pose[1]))
+        sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
+                            %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
         state1=list(lrf)+[action[0]*2,action[1]]
-        state1+=[goal_dist*cos(goal_angle)/5.578,goal_dist*sin(goal_angle)/5.578] \
-                if goal_dist<5.578 else \
-                [cos(goal_angle),sin(goal_angle)]
-        if min(lrf)<0.0358:
-            done=0
-            print(' | Fail')
-        elif goal_dist<0.1:
-            done=0
-            print(' | Success')
-        else:
-            done=1
-        return state1,done
+        state1+=[goal_dist/5.578,goal_angle/pi] \
+                    if goal_dist<5.578 else \
+                [1,goal_angle/pi]
         if self.goal_dist_prev!=None:
             reward=self.reward(lrf,goal_dist,action)
+            print(reward)
+            self.reward_sum+=reward
+        if min(lrf)<0.0358:
+            done=1
+            print(' | avg.reward:% 4.2f | Fail'%(self.reward_sum/self.count))
+        elif goal_dist<0.1:
+            done=1
+            print(' | avg.reward:% 4.2f | Success'%(self.reward_sum/self.count))
+        else:
+            done=0
+        return state1,done
         if self.state0!=None:
             self.replay.add({'state0':self.state0, \
                              'action':action, \
@@ -104,7 +113,7 @@ class Turtlebot_obstacles(Core):
                              'done':done})
         self.state0=state1
         self.action_prev=action
-        self.goal_dist_prev=goal_dist
+        self.goal_dist_prev=goal_dist        
     
     def controller(self,action):
         vel_right=2.0*(action[0]+self.d*action[1])/self.r

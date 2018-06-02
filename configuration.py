@@ -8,13 +8,13 @@ class Settings(object):
         self.action_dim=2
         self.action_bounds=[[0.5,1.0],[0.0,-1.0]] # [max,min]
         self.gamma=0.9 # discount factor
-        self.layers=[200,200] # [hidden1,hidden2,... ]
+        self.layers=[512,512,256] # [hidden1,hidden2,... ]
         self.critic_learning_rate=1e-3
         self.actor_learning_rate=1e-4
         self.tau=1e-3
-        self.l2_penalty=1e-4
+        self.l2_penalty=1e-5
         self.max_buffer=1e+5
-        self.batch_size=100
+        self.batch_size=200
         self.max_step=500
         self.max_episode=2000
         self.reward_param=0.0

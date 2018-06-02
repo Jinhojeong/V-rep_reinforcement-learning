@@ -1,12 +1,11 @@
 from __future__ import print_function
-import sys
+import os,sys,time
+from numpy import reshape,save
 from configuration import config
 
 from agent.ddpg import DDPG
 from environment.turtlebot_obstacles import Turtlebot_obstacles
 
-import time
-from numpy import reshape
 
 env=Turtlebot_obstacles(config)
 agent=DDPG(config)
@@ -16,20 +15,24 @@ env.launch()
 def train():
     for episode in range(config.max_episode):
         env.reset()
-        print('Episode:',episode)
+        print('Episode:',episode+1)
         env.start()
         state,done=env.step([0,0])
         for step in range(config.max_step):
             action=agent.policy(reshape(state,[1,config.state_dim]))
             state,done=env.step(reshape(action,[config.action_dim]))
-            if env.replay.buffersize>10:
+            if env.replay.buffersize>100:
                 batch=env.replay.batch()
+                print(batch[reward][-1])
                 agent.update(batch)
-            if done==0:
+            if done==1:
                 break
         if step>=config.max_step-1:
             print(' | Timeout')
-    
+        if (episode+1)%100==0:
+            save(os.path.join( \
+                'savedir','weight_'+str(config.reward_param)+'.npy'), \
+                agent.return_variables())
 # def test(self, savedir):
 #     traj=None
 #     return traj
