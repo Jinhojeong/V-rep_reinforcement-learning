@@ -14,7 +14,7 @@ class DDPG(object):
         self.sess=tf.Session(config=sess_config)
         self.var_init=tf.global_variables_initializer()
         self.reward=tf.placeholder(tf.float32,[None,1])
-        self.done=tf.placeholder(tf.float32,[None,1])
+        self.done=tf.placeholder(tf.float32,[None])
         self.target_q=tf.placeholder(tf.float32,[None,1])
         self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
         # build network
@@ -24,7 +24,7 @@ class DDPG(object):
         self.critic_target=Build_network(self.sess,config,'critic_target')
         self.var_init=tf.global_variables_initializer()
         # update critic
-        y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,1.0-self.done))
+        y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,tf.reshape(1.0-self.done,[-1,1])))
         q_loss=tf.reduce_sum(tf.pow(self.critic_net.out_-y,2))/config.batch_size+ \
             config.l2_penalty*l2_regularizer(self.critic_net.var_list)
         self.update_critic=tf.train.AdamOptimizer( \
