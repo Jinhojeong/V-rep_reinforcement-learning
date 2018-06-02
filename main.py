@@ -12,7 +12,14 @@ agent=DDPG(config)
 
 env.launch()
 
-def train():
+def train(port):
+    env=Turtlebot_obstacles(config)
+
+    agent=DDPG(config)
+
+    env.launch()
+
+    config.api_port=port
     for episode in range(config.max_episode):
         env.reset()
         print('Episode:',episode+1)
@@ -23,7 +30,7 @@ def train():
             state,done=env.step(reshape(action,[config.action_dim]))
             if env.replay.buffersize>10:
                 batch=env.replay.batch()            
-                agent.update(batch)
+                # agent.update(batch)
             if done==0:
                 break
         if step>=config.max_step-1:
