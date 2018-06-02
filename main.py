@@ -13,13 +13,13 @@ from environment.turtlebot_obstacles import Turtlebot_obstacles
 # env.launch()
 
 def train(port):
+    config.api_port=port
     env=Turtlebot_obstacles(config)
 
     agent=DDPG(config)
 
     env.launch()
 
-    config.api_port=port
     for episode in range(config.max_episode):
         env.reset()
         print('Episode:',episode+1)
@@ -43,5 +43,5 @@ def train(port):
 #     traj=None
 #     return traj
 if __name__=='__main__':
-    train(port)
+    train(20000)
 # env.launch()
