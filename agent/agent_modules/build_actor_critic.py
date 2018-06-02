@@ -39,9 +39,11 @@ class Build_network(object):
                 self.out_=out_
 
     def evaluate(self,state,action=None):
-        return self.sess.run(self.out_, \
-                             feed_dict={self.state:state} if action==None else \
-                                       {self.state:state,self.action:action})    
+        if self.name[0]=='a':
+            feed_dict={self.state:state}
+        else:
+            feed_dict={self.state:state,self.action:action}
+        return self.sess.run(self.out_,feed_dict=feed_dict)    
 
     def layer_fc(self,in_,layer):
         return tf.matmul(in_,self.variables[self.name+'/'+layer+'/w:0'])+ \

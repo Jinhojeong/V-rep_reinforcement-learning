@@ -29,9 +29,9 @@ class Replay(object):
             for name in self.buffer.keys():
                 self.buffer[name][self.currentPosition]=experience[name]
         else:
-            for name in experience.keys():
+            for name in self.buffer.keys():
                 self.buffer[name].append(experience[name])
-                self.buffersize+=1
+            self.buffersize+=1
         self.currentPosition+=1
     
     def clear(self):
