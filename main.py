@@ -23,7 +23,7 @@ def train():
             state,done=env.step(reshape(action,[config.action_dim]))
             if env.replay.buffersize>100:
                 batch=env.replay.batch()
-                print(batch[reward][-1])
+                print(batch['reward'][-1])
                 agent.update(batch)
             if done==1:
                 break
