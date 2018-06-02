@@ -80,7 +80,7 @@ class DDPG(object):
                                  self.critic_net.action:batch['action0'], \
                                  self.reward:batch['reward'], \
                                  self.target_q:target_q, \
-                                 self.done:reshape(batch['done'],[-1,1])})
+                                 self.done:batch['done']})
         self.sess.run(self.update_actor, \
                       feed_dict={self.critic_net.state:batch['state0'], \
                                  self.critic_net.action:batch['action0'], \
