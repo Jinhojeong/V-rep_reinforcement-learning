@@ -14,7 +14,7 @@ class DDPG(object):
         self.sess=tf.Session(config=sess_config)
         self.var_init=tf.global_variables_initializer()
         self.reward=tf.placeholder(tf.float32,[None,1])
-        self.done=tf.placeholder(tf.float32,[None])
+        # self.done=tf.placeholder(tf.float32,[None])
         self.target_q=tf.placeholder(tf.float32,[None,1])
         self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
         # build network
@@ -79,8 +79,9 @@ class DDPG(object):
                       feed_dict={self.critic_net.state:batch['state0'], \
                                  self.critic_net.action:batch['action0'], \
                                  self.reward:batch['reward'], \
-                                 self.target_q:target_q, \
-                                 self.done:batch['done']})
+                                #  self.target_q:target_q, \
+                                #  self.done:batch['done']})
+                                 self.target_q:target_q})
         self.sess.run(self.update_actor, \
                       feed_dict={self.critic_net.state:batch['state0'], \
                                  self.critic_net.action:batch['action0'], \
