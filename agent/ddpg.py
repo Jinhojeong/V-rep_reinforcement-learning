@@ -10,11 +10,13 @@ class DDPG(object):
     def __init__(self,config):
         sess_config=tf.ConfigProto()
         sess_config.gpu_options.allow_growth=True
+        self.state_dim=config.state_dim
+        self.action_dim=config.action_dim
         self.gamma=tf.constant(config.gamma,dtype=tf.float32,name='gamma')
         self.sess=tf.Session(config=sess_config)
         self.var_init=tf.global_variables_initializer()
         self.reward=tf.placeholder(tf.float32,[None,1])
-        # self.done=tf.placeholder(tf.float32,[None])
+        self.done=tf.placeholder(tf.float32,[None])
         self.target_q=tf.placeholder(tf.float32,[None,1])
         self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
         # build network
@@ -24,8 +26,8 @@ class DDPG(object):
         self.critic_target=Build_network(self.sess,config,'critic_target')
         self.var_init=tf.global_variables_initializer()
         # update critic
-        # y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,self.done))
-        y=self.reward+tf.multiply(self.gamma,self.target_q)
+        y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,self.done))
+        # y=self.reward+tf.multiply(self.gamma,self.target_q)
         q_loss=tf.reduce_sum(tf.pow(self.critic_net.out_-y,2))/config.batch_size+ \
             config.l2_penalty*l2_regularizer(self.critic_net.var_list)
         self.update_critic=tf.train.AdamOptimizer( \
@@ -74,15 +76,20 @@ class DDPG(object):
         self.sess.run(self.var_init)
 
     def update(self,batch):
-        target_action=self.actor_target.evaluate(batch['state1'])
-        target_q=self.critic_target.evaluate(batch['state1'],target_action)
+        state0=reshape(batch['state0'],[-1,self.state_dim])
+        state1=reshape(batch['state1'],[-1,self.state_dim])
+        action0=reshape(batch['action0'],[-1,self.action_dim])
+        reward=reshape(batch['reward'],[-1,1])
+        done=reshape(batch['done'],[-1,1])
+        target_action=self.actor_target.evaluate(state1)
+        target_q=self.critic_target.evaluate(state1,target_action)
         self.sess.run(self.update_critic, \
-                      feed_dict={self.critic_net.state:batch['state0'], \
-                                 self.critic_net.action:batch['action0'], \
-                                 self.reward:batch['reward'], \
-                                #  self.target_q:target_q, \
-                                #  self.done:batch['done']})
-                                 self.target_q:target_q})
+                      feed_dict={self.critic_net.state:state0, \
+                                 self.critic_net.action:action0, \
+                                 self.reward:reward, \
+                                 self.target_q:target_q, \
+                                 self.done:done})
+                                #  self.target_q:target_q})
         self.sess.run(self.update_actor, \
                       feed_dict={self.critic_net.state:batch['state0'], \
                                  self.critic_net.action:batch['action0'], \
