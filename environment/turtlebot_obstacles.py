@@ -85,16 +85,14 @@ class Turtlebot_obstacles(Core):
             lrf=array(vrep.simxUnpackFloats(lrf_bin),dtype=float)/5.578
         goal_dist=linalg.norm(goal_pos)
         goal_angle=arctan2(-goal_pos[0],goal_pos[1])
-        # print(vel)
-        sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
-                            %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
+        # sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
+        #                     %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
         state1=list(lrf)+[action[0]*2,action[1]]
         state1+=[goal_dist/5.578,goal_angle/pi] \
                     if goal_dist<5.578 else \
                 [1,goal_angle/pi]
         if self.goal_dist_prev!=None:
             reward=self.reward(lrf,goal_dist,action)
-            print(reward)
             self.reward_sum+=reward
         if min(lrf)<0.0358:
             done=1
@@ -105,15 +103,19 @@ class Turtlebot_obstacles(Core):
         else:
             done=0
         return state1,done
-        if self.state0!=None:
+        if self.state0==None:
+            self.state0=state1
+        else:
             self.replay.add({'state0':self.state0, \
                              'action':action, \
                              'reward':reward, \
                              'state1':state1, \
                              'done':done})
+            print('buffersize:',self.replay.buffersize)
         self.state0=state1
         self.action_prev=action
-        self.goal_dist_prev=goal_dist        
+        self.goal_dist_prev=goal_dist
+        print(reward)    
     
     def controller(self,action):
         vel_right=2.0*(action[0]+self.d*action[1])/self.r
