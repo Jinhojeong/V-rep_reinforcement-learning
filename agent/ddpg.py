@@ -9,7 +9,8 @@ class DDPG(object):
 
     def __init__(self,config):
         sess_config=tf.ConfigProto()
-        sess_config.gpu_options.allow_growth=True
+        # sess_config.gpu_options.allow_growth=True
+        sess_config.gpu_options.per_process_gpu_memory_fraction = 0.1
         self.state_dim=config.state_dim
         self.action_dim=config.action_dim
         self.gamma=tf.constant(config.gamma,dtype=tf.float32,name='gamma')

@@ -12,7 +12,7 @@ from environment.turtlebot_obstacles import Turtlebot_obstacles
 
 # env.launch()
 
-def train(port=20000):
+def train(port):
     env=Turtlebot_obstacles(config)
 
     agent=DDPG(config)
@@ -35,13 +35,13 @@ def train(port=20000):
                 break
         if step>=config.max_step-1:
             print(' | Timeout')
-        if (episode+1)%100==0:
-            save(os.path.join( \
-                'savedir','weight_'+str(config.reward_param)+'.npy'), \
-                agent.return_variables())
+        # if (episode+1)%100==0:
+        #     save(os.path.join( \
+        #         'savedir','weight_'+str(config.reward_param)+'.npy'), \
+        #         agent.return_variables())
 # def test(self, savedir):
 #     traj=None
 #     return traj
 if __name__=='__main__':
-    train()
+    train(port)
 # env.launch()
