@@ -1,5 +1,13 @@
-from multiprocessing import Pool
+from multiprocessing import Process
 from main import train
 if __name__ == '__main__':
-    p = Pool(4)
-    print(p.map(train, range(19998,20001)))
+    ports = [19998, 19999, 20000]
+
+    procs = []
+    for idx, port in enumerate(ports):
+        proc = Process(target=train, args=(port,))
+        procs.append(proc)
+        proc.start()
+
+    for proc in procs:
+        proc.join()
