@@ -2,7 +2,7 @@ from __future__ import print_function
 import os
 import sys
 import time
-from numpy import array,reshape,linalg,arctan2,pi
+from numpy import array,reshape,linalg,arctan2,pi,expand_dims
 from random import choice
 from env_modules import vrep
 from env_modules.core import Core
@@ -107,7 +107,7 @@ class Turtlebot_obstacles(Core):
                             'action0':action, \
                             'reward':reward, \
                             'state1':state1, \
-                            'done':list([[done]]),})
+                            'done':expand_dims(done,0)})
         self.state0=state1
         self.action_prev=action
         self.goal_dist_prev=goal_dist
