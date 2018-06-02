@@ -7,12 +7,12 @@ from agent.ddpg import DDPG
 from environment.turtlebot_obstacles import Turtlebot_obstacles
 
 
-env=Turtlebot_obstacles(config)
-agent=DDPG(config)
+# env=Turtlebot_obstacles(config)
+# agent=DDPG(config)
 
-env.launch()
+# env.launch()
 
-def train(port):
+def train(port=20000):
     env=Turtlebot_obstacles(config)
 
     agent=DDPG(config)
