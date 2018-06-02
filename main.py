@@ -14,7 +14,7 @@ from environment.turtlebot_obstacles import Turtlebot_obstacles
 
 def train(port):
     config.api_port=port
-    env=Turtlebot_obstacles(config)
+    env=Turtlebot_obstacles(config,port)
 
     agent=DDPG(config)
 

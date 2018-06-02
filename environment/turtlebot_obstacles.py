@@ -13,7 +13,7 @@ scene_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),'scenes')
 
 class Turtlebot_obstacles(Core):
 
-    def __init__(self,config):
+    def __init__(self,config,port):
         Core.__init__(
             self,
             config,
@@ -26,6 +26,7 @@ class Turtlebot_obstacles(Core):
         self.action_prev=[0.0,0.0]
         self.state0=None
         self.goal_dist_prev=None
+        self.port=port
     
     def launch(self):
         self.vrep_launch()
@@ -84,8 +85,10 @@ class Turtlebot_obstacles(Core):
             lrf=array(vrep.simxUnpackFloats(lrf_bin),dtype=float)/5.578
         goal_dist=linalg.norm(goal_pos)
         goal_angle=arctan2(-goal_pos[0],goal_pos[1])
-        sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
-                            %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
+        # sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
+        #                     %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
+        print('port:%d| step:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
+                            %(self.port,self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
         state1=list(lrf)+[action[0]*2,action[1]]
         state1+=[goal_dist/5.578,goal_angle/pi] \
                     if goal_dist<5.578 else \
