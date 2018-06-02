@@ -107,7 +107,7 @@ class Turtlebot_obstacles(Core):
                             'action0':action, \
                             'reward':reward, \
                             'state1':state1, \
-                            'done':list(float(done)),})
+                            'done':list(done),})
         self.state0=state1
         self.action_prev=action
         self.goal_dist_prev=goal_dist
