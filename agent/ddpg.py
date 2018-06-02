@@ -14,7 +14,7 @@ class DDPG(object):
         self.sess=tf.Session(config=sess_config)
         self.var_init=tf.global_variables_initializer()
         self.reward=tf.placeholder(tf.float32,[None,1])
-        self.done=tf.placeholder(tf.float32,[None])
+        self.done=tf.placeholder(tf.float32,[None,1])
         self.target_q=tf.placeholder(tf.float32,[None,1])
         self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
         # build network
