@@ -95,13 +95,13 @@ class Turtlebot_obstacles(Core):
             self.goal_dist_prev=goal_dist
             self.reward_sum+=reward
         if min(lrf)<0.0358:
-            done=1
+            done=0
             print(' | avg.reward:% 4.2f | Fail'%(self.reward_sum/self.count))
         elif goal_dist<0.1:
-            done=1
+            done=0
             print(' | avg.reward:% 4.2f | Success'%(self.reward_sum/self.count))
         else:
-            done=0
+            done=1
         if self.state0!=None:
             self.replay.add({'state0':self.state0, \
                             'action0':action, \

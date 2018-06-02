@@ -24,7 +24,7 @@ def train():
             if env.replay.buffersize>10:
                 batch=env.replay.batch()            
                 agent.update(batch)
-            if done==1:
+            if done==0:
                 break
         if step>=config.max_step-1:
             print(' | Timeout')
