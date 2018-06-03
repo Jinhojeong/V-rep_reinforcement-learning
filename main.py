@@ -13,6 +13,7 @@ from environment.turtlebot_obstacles import Turtlebot_obstacles
 # env.launch()
 
 def train(port):
+    max_epoch=10000000
     config.api_port=port
     env=Turtlebot_obstacles(config,port)
 
@@ -39,6 +40,8 @@ def train(port):
             save(os.path.join( \
                 'savedir','weight_'+str(config.reward_param)+'.npy'), \
                 agent.return_variables())
+        if env.epoch>max_epoch:
+            break
 # def test(self, savedir):
 #     traj=None
 #     return traj

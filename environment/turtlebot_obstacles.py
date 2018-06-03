@@ -39,6 +39,8 @@ class Turtlebot_obstacles(Core):
             'Turtlebot2',vrep.simx_opmode_blocking)[1]
         self.goal_handle=vrep.simxGetObjectHandle(self.clientID, \
             'Goal',vrep.simx_opmode_blocking)[1]
+        self.epoch=0
+        self.count=0
     
     def reset(self):
         self.vrep_reset()
@@ -48,6 +50,7 @@ class Turtlebot_obstacles(Core):
         self.state0=None
         self.action_prev=[0.0,0.0]
         self.goal_dist_prev=None
+        self.epoch+=self.count
         self.count=0
         self.reward_sum=0.0
         time.sleep(0.2)
@@ -62,7 +65,7 @@ class Turtlebot_obstacles(Core):
                 'hokuyo_data',vrep.simx_opmode_streaming)[1]
     
     def reward(self,lrf,goal_dist,action):
-        return 8*(self.goal_dist_prev-goal_dist) \
+        return 10*(self.goal_dist_prev-goal_dist) \
                -(1/min(lrf)-1)/10.0 \
                -self.reward_param*(1+action[1]**2)
     
