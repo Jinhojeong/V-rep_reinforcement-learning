@@ -27,7 +27,8 @@ def train(port):
         env.start()
         state,done=env.step([0,0])
         for step in range(config.max_step):
-            action=agent.policy(reshape(state,[1,config.state_dim]))
+            epsilon=0.99999**env.epoch
+            action=agent.policy(reshape(state,[1,config.state_dim]),epsilon=epsilon)
             state,done=env.step(reshape(action,[config.action_dim]))
             if env.replay.buffersize>100:
                 batch=env.replay.batch()            

@@ -63,6 +63,8 @@ class Turtlebot_obstacles(Core):
         while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:
             lrf_bin=vrep.simxGetStringSignal(self.clientID, \
                 'hokuyo_data',vrep.simx_opmode_streaming)[1]
+            pose=vrep.simxGetObjectPosition(self.clientID, \
+                self.body_handle,-1,vrep.simx_opmode_oneshot)[1]
     
     def reward(self,lrf,goal_dist,action):
         return 10*(self.goal_dist_prev-goal_dist) \
