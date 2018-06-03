@@ -1,5 +1,5 @@
 import tensorflow as tf
-from numpy import reshape,tanh
+from numpy import reshape,tanh,random
 from agent_modules.build_actor_critic import Build_network
 from agent_modules.additional_functions import l2_regularizer,gradient_inverter
 from agent_modules.ou_noise import OUNoise
@@ -63,14 +63,14 @@ class DDPG(object):
         self.var_init=tf.global_variables_initializer()
         self.sess.run(self.var_init)
         self.sess.run(self.assign_target)
-        self.ou=OUNoise(config.action_dim)
+        # self.ou=OUNoise(config.action_dim)
         self.a_scale,self.a_mean=self.sess.run(
             [self.actor_net.a_scale,self.actor_net.a_mean])
 
     def policy(self,state,epsilon=1.0):
         action=self.sess.run(self.actor_net.out_before_activation, \
             feed_dict={self.actor_net.state:state})
-        action=self.a_scale*tanh(action+self.ou.noise())+self.a_mean
+        action=self.a_scale*tanh(action+0.2*random.randn(1,2))+self.a_mean
         return action
     
     def reset(self):

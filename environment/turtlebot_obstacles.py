@@ -62,7 +62,7 @@ class Turtlebot_obstacles(Core):
                 'hokuyo_data',vrep.simx_opmode_streaming)[1]
     
     def reward(self,lrf,goal_dist,action):
-        return 20*(self.goal_dist_prev-goal_dist) \
+        return 8*(self.goal_dist_prev-goal_dist) \
                -(1/min(lrf)-1)/10.0 \
                -self.reward_param*(1+action[1]**2)
     
