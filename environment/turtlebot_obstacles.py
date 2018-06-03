@@ -85,10 +85,10 @@ class Turtlebot_obstacles(Core):
             lrf=array(vrep.simxUnpackFloats(lrf_bin),dtype=float)/5.578
         goal_dist=linalg.norm(goal_pos)
         goal_angle=arctan2(-goal_pos[0],goal_pos[1])
-        # sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
-        #                     %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
-        print('port:%d| step:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
-                            %(self.port,self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
+        sys.stderr.write('\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
+                            %(self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
+        # print('port:%d| step:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f' \
+        #                     %(self.port,self.count,self.goal[0],self.goal[1],pose[0],pose[1]))
         state1=list(lrf)+[action[0]*2,action[1]]
         state1+=[goal_dist/5.578,goal_angle/pi] \
                     if goal_dist<5.578 else \

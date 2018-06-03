@@ -30,15 +30,15 @@ def train(port):
             state,done=env.step(reshape(action,[config.action_dim]))
             if env.replay.buffersize>10:
                 batch=env.replay.batch()            
-                # agent.update(batch)
+                agent.update(batch)
             if done==0:
                 break
         if step>=config.max_step-1:
             print(' | Timeout')
-        # if (episode+1)%100==0:
-        #     save(os.path.join( \
-        #         'savedir','weight_'+str(config.reward_param)+'.npy'), \
-        #         agent.return_variables())
+        if (episode+1)%100==0:
+            save(os.path.join( \
+                'savedir','weight_'+str(config.reward_param)+'.npy'), \
+                agent.return_variables())
 # def test(self, savedir):
 #     traj=None
 #     return traj

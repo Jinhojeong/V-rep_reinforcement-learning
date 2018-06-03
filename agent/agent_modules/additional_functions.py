@@ -14,6 +14,6 @@ def gradient_inverter(action_bounds,action_gradients,actions):
     pdiff_max=tf.div(-actions+pmax,prange)
     pdiff_min=tf.div(actions-pmin,prange)
     zeros_act_grad_filter=tf.zeros([action_dim])
-    act_grad=tf.placeholder(tf.float32,[None,action_dim])
+    # act_grad=tf.placeholder(tf.float32,[None,action_dim])
     # grad_inverter = tf.select(tf.greater(act_grad, zeros_act_grad_filter), tf.mul(act_grad, pdiff_max), tf.mul(act_grad, pdiff_min))        
-    return tf.where(tf.greater(act_grad,zeros_act_grad_filter),tf.multiply(act_grad,pdiff_max),tf.multiply(act_grad,pdiff_min))   
+    return tf.where(tf.greater(action_gradients,zeros_act_grad_filter),tf.multiply(action_gradients,pdiff_max),tf.multiply(action_gradients,pdiff_min))   

@@ -20,7 +20,7 @@ class Settings(object):
         self.reward_param=0.0
         self.vrep_path='/opt/vrep'
         self.autolaunch=True
-        self.visualization=True
+        self.visualization=False
         self.solver='bullet'
         self.dt=100
         self.api_port=20000

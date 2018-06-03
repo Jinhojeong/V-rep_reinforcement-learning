@@ -1,5 +1,5 @@
 import tensorflow as tf
-from numpy import reshape
+from numpy import reshape,tanh
 from agent_modules.build_actor_critic import Build_network
 from agent_modules.additional_functions import l2_regularizer,gradient_inverter
 from agent_modules.ou_noise import OUNoise
@@ -19,20 +19,19 @@ class DDPG(object):
         self.reward=tf.placeholder(tf.float32,[None,1])
         self.done=tf.placeholder(tf.float32,[None,1])
         self.target_q=tf.placeholder(tf.float32,[None,1])
-        self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
+        # self.noise=tf.placeholder(tf.float32,[None,config.action_dim])
         # build network
         self.actor_net=Build_network(self.sess,config,'actor_net')
         self.actor_target=Build_network(self.sess,config,'actor_target')
         self.critic_net=Build_network(self.sess,config,'critic_net')
         self.critic_target=Build_network(self.sess,config,'critic_target')
-        self.var_init=tf.global_variables_initializer()
         # update critic
         y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,self.done))
         # y=self.reward+tf.multiply(self.gamma,self.target_q)
         q_loss=tf.reduce_sum(tf.pow(self.critic_net.out_-y,2))/config.batch_size+ \
             config.l2_penalty*l2_regularizer(self.critic_net.var_list)
         self.update_critic=tf.train.AdamOptimizer( \
-            learning_rate=config.critic_learning_rate).minimize(q_loss)
+            learning_rate=config.critic_learning_rate).minimize(q_loss,var_list=self.critic_net.var_list)
         # update actor
         act_grad_v=tf.gradients(self.critic_net.out_,self.critic_net.action)
         action_gradients=[act_grad_v[0]/tf.to_float(tf.shape(act_grad_v[0])[0])]
@@ -60,18 +59,19 @@ class DDPG(object):
                 config.tau*self.critic_net.variables[var.replace('_target','_net')]+ \
                 (1-config.tau)*self.critic_target.variables[var] \
             ) for var in self.critic_target.variables.keys()]
-        # add noise
-        self.action=tf.multiply(
-            tf.nn.tanh(self.actor_net.out_before_activation+self.noise), \
-            self.actor_net.a_scale)+self.actor_net.a_mean
         # initialize variables
+        self.var_init=tf.global_variables_initializer()
         self.sess.run(self.var_init)
         self.sess.run(self.assign_target)
         self.ou=OUNoise(config.action_dim)
+        self.a_scale,self.a_mean=self.sess.run(
+            [self.actor_net.a_scale,self.actor_net.a_mean])
 
-    def policy(self,state,epsilon=1):
-        return self.sess.run(self.action, \
-            feed_dict={self.actor_net.state:state,self.noise:epsilon*self.ou.noise()})
+    def policy(self,state,epsilon=1.0):
+        action=self.sess.run(self.actor_net.out_before_activation, \
+            feed_dict={self.actor_net.state:state})
+        action=self.a_scale*tanh(action+self.ou.noise())+self.a_mean
+        return action
     
     def reset(self):
         self.sess.run(self.var_init)
@@ -83,14 +83,13 @@ class DDPG(object):
         reward=reshape(batch['reward'],[-1,1])
         done=reshape(batch['done'],[-1,1])
         target_action=self.actor_target.evaluate(state1)
-        target_q=self.critic_target.evaluate(state1,target_action)
+        target_q=self.critic_target.evaluate(state1,action=target_action)
         self.sess.run(self.update_critic, \
                       feed_dict={self.critic_net.state:state0, \
                                  self.critic_net.action:action0, \
                                  self.reward:reward, \
                                  self.target_q:target_q, \
                                  self.done:done})
-                                #  self.target_q:target_q})
         self.sess.run(self.update_actor, \
                       feed_dict={self.critic_net.state:batch['state0'], \
                                  self.critic_net.action:batch['action0'], \
