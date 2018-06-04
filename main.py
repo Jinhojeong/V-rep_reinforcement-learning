@@ -32,7 +32,7 @@ def train(port):
             if env.replay.buffersize>100:
                 batch=env.replay.batch()            
                 agent.update(batch)
-            if done==0:
+            if done==1:
                 break
         if step>=config.max_step-1:
             print(' | Timeout')
