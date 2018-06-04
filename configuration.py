@@ -24,7 +24,7 @@ class Settings(object):
         self.autolaunch=True
         self.visualization=True
         self.solver='bullet'
-        self.dt=100
+        self.dt=100 # milisecond
         self.api_port=20000
         
 
