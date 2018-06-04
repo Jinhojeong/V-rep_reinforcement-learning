@@ -64,7 +64,7 @@ class Turtlebot_obstacles(Core):
             lrf_bin=vrep.simxGetStringSignal(self.clientID, \
                 'hokuyo_data',vrep.simx_opmode_streaming)[1]
             pose=vrep.simxGetObjectPosition(self.clientID, \
-                self.body_handle,-1,vrep.simx_opmode_oneshot)[1]
+                self.body_handle,-1,vrep.simx_opmode_streaming)[1]
     
     def reward(self,lrf,goal_dist,action):
         return 10*(self.goal_dist_prev-goal_dist) \
@@ -78,11 +78,11 @@ class Turtlebot_obstacles(Core):
         vrep.simxSynchronousTrigger(self.clientID)
         while vrep.simxGetLastCmdTime(self.clientID)-t<self.dt:
             pose=vrep.simxGetObjectPosition(self.clientID, \
-                self.body_handle,-1,vrep.simx_opmode_oneshot)[1]
+                self.body_handle,-1,vrep.simx_opmode_streaming)[1]
             orientation=vrep.simxGetObjectOrientation(self.clientID, \
-                self.body_handle,-1,vrep.simx_opmode_oneshot)[1][2]
+                self.body_handle,-1,vrep.simx_opmode_streaming)[1][2]
             goal_pos=vrep.simxGetObjectPosition(self.clientID, \
-                self.goal_handle,self.body_handle,vrep.simx_opmode_oneshot)[1][1:3]
+                self.goal_handle,self.body_handle,vrep.simx_opmode_streaming)[1][1:3]
             # vel=vrep.simxGetObjectVelocity(self.clientID, \
             #     self.body_handle,vrep.simx_opmode_streaming)
             lrf_bin=vrep.simxGetStringSignal(self.clientID, \
