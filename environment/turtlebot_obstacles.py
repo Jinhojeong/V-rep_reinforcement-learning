@@ -21,7 +21,7 @@ class Turtlebot_obstacles(Core):
         self.d=0.115
         self.r=0.035
         # self.goal_set=[[1,1],[1,2],[1,0],[1,-1]]
-        self.goal_set=[[7.0,7.0]]
+        self.goal_set=[[7.0,7.0],[6.0,6.0],[4.0,4.0]]
         self.reward_param=config.reward_param
         self.action_prev=[0.0,0.0]
         self.state0=None
