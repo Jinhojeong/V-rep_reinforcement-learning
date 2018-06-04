@@ -26,7 +26,7 @@ class Turtlebot_obstacles(Core):
         self.action_prev=[0.0,0.0]
         self.state0=None
         self.goal_dist_prev=None
-        self.port=port
+        self.port=config.api_port
     
     def launch(self):
         self.vrep_launch()
@@ -102,13 +102,13 @@ class Turtlebot_obstacles(Core):
             '\rstep:%d| goal:% 2.1f,% 2.1f | pose:% 2.1f,% 2.1f | avg.reward:% 4.2f' \
             %(self.count,self.goal[0],self.goal[1],pose[0],pose[1],self.reward_sum/self.count))
         if min(lrf)<0.0358:
-            done=0
+            done=1
             print(' | Fail')
         elif goal_dist<0.1:
-            done=0
+            done=1
             print(' | Success')
         else:
-            done=1
+            done=0
         if self.state0!=None:
             self.replay.add({'state0':self.state0, \
                             'action0':action, \

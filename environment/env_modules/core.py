@@ -4,7 +4,6 @@ import random
 import subprocess
 import time
 import numpy as np
-from collections import deque
 
 import vrep
 from replay import Replay

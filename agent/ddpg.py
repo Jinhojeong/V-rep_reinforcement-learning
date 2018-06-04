@@ -8,9 +8,12 @@ from agent_modules.ou_noise import OUNoise
 class DDPG(object):
 
     def __init__(self,config):
-        sess_config=tf.ConfigProto()
-        # sess_config.gpu_options.allow_growth=True
-        sess_config.gpu_options.per_process_gpu_memory_fraction = 0.1
+        if config.gpu:
+            sess_config=tf.ConfigProto()
+            # sess_config.gpu_options.allow_growth=True
+            sess_config.gpu_options.per_process_gpu_memory_fraction = 0.1
+        else:
+            sess_config=None
         self.state_dim=config.state_dim
         self.action_dim=config.action_dim
         self.gamma=tf.constant(config.gamma,dtype=tf.float32,name='gamma')
@@ -26,7 +29,7 @@ class DDPG(object):
         self.critic_net=Build_network(self.sess,config,'critic_net')
         self.critic_target=Build_network(self.sess,config,'critic_target')
         # update critic
-        y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,self.done))
+        y=self.reward+tf.multiply(self.gamma,tf.multiply(self.target_q,1.0-self.done))
         # y=self.reward+tf.multiply(self.gamma,self.target_q)
         q_loss=tf.reduce_sum(tf.pow(self.critic_net.out_-y,2))/config.batch_size+ \
             config.l2_penalty*l2_regularizer(self.critic_net.var_list)

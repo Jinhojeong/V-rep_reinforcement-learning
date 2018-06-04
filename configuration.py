@@ -4,6 +4,7 @@ class Settings(object):
         self.default()
 
     def default(self):
+        self.gpu=True
         self.state_dim=40
         self.action_dim=2
         self.action_bounds=[[0.5,1.0],[0.0,-1.0]] # [max,min]
