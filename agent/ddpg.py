@@ -73,7 +73,7 @@ class DDPG(object):
     def policy(self,state,epsilon=1.0):
         action=self.sess.run(self.actor_net.out_before_activation, \
             feed_dict={self.actor_net.state:state})
-        action=self.a_scale*tanh(action+0.2*random.randn(1,2))+self.a_mean
+        action=self.a_scale*tanh(action+0.4*random.randn(1,2))+self.a_mean
         return action
     
     def reset(self):
