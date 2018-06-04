@@ -68,7 +68,7 @@ class Turtlebot_obstacles(Core):
     
     def reward(self,lrf,goal_dist,action):
         return 10*(self.goal_dist_prev-goal_dist) \
-               -(1/min(lrf)-1)/10.0 \
+               -(1/min(lrf)-1)/5.0 \
                -self.reward_param*(1+action[1]**2)
     
     def step(self,action):
