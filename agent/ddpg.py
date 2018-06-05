@@ -111,4 +111,4 @@ class DDPG(object):
         return dict({name:self.sess.run(name) \
                     for name in self.actor_net.variables.keys()}, \
                **{name:self.sess.run(name) \
-                    for name in self.actor_net.variables.keys()})
+                    for name in self.critic_net.variables.keys()})
