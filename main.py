@@ -1,6 +1,6 @@
 from __future__ import print_function
 import os,sys,time
-from numpy import reshape,save
+from numpy import reshape,save,load
 from configuration import config
 
 from agent.ddpg import DDPG
@@ -17,6 +17,7 @@ def train(port):
     env=Turtlebot_obstacles(config,port)
 
     agent=DDPG(config)
+    # agent.load(load('savedir/weight_0.0.npy').item())
 
     env.launch()
 
@@ -26,7 +27,7 @@ def train(port):
         env.start()
         state,done=env.step([0,0])
         for step in range(config.max_step):
-            epsilon=0.99999**env.epoch
+            epsilon=0.99998**env.epoch
             action=agent.policy(reshape(state,[1,config.state_dim]),epsilon=epsilon)
             state,done=env.step(reshape(action,[config.action_dim]))
             if env.replay.buffersize>100:
