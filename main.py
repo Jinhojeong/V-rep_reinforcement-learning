@@ -6,7 +6,8 @@ from configuration import config
 from agent.ddpg import DDPG
 from environment.turtlebot_obstacles import Turtlebot_obstacles
 
-
+# config.autolaunch=False
+config.reward_param=0.8
 # env=Turtlebot_obstacles(config)
 # agent=DDPG(config)
 
@@ -27,7 +28,7 @@ def train(port):
         env.start()
         state,done=env.step([0,0])
         for step in range(config.max_step):
-            epsilon=0.99998**env.epoch
+            epsilon=0.99999**env.epoch
             action=agent.policy(reshape(state,[1,config.state_dim]),epsilon=epsilon)
             state,done=env.step(reshape(action,[config.action_dim]))
             if env.replay.buffersize>100:

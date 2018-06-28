@@ -46,7 +46,7 @@ class Turtlebot_obstacles(Core):
         self.vrep_reset()
         self.goal=choice(self.goal_set)
         vrep.simxSetObjectPosition(self.clientID, \
-            self.goal_handle,-1,self.goal+[0],vrep.simx_opmode_oneshot)
+            self.goal_handle,-1,self.goal+[0],vrep.simx_opmode_blocking)
         self.state0=None
         self.action_prev=[0.0,0.0]
         self.goal_dist_prev=None
@@ -67,9 +67,16 @@ class Turtlebot_obstacles(Core):
                 self.body_handle,-1,vrep.simx_opmode_streaming)[1]
     
     def reward(self,lrf,goal_dist,action):
-        return 10*(self.goal_dist_prev-goal_dist) \
-               -(1/min(lrf)-1)/5.0 \
-               -0.5*(1+self.reward_param*action[1]**2)
+        # return 10*(self.goal_dist_prev-goal_dist) \
+        #        -(1/min(lrf)-1)/5.0 \
+        #        -0.5*(1+self.reward_param*action[1]**2)
+        r_g=10.0*(self.goal_dist_prev-goal_dist)
+        rho=min(lrf)
+        if (rho-0.0358)<self.reward_param/5.578:
+            r_o=min((1.0/(rho-0.0358)-5.578/self.reward_param)**2,1)
+        else:
+            r_o=0
+        return r_g-r_o
     
     def step(self,action):
         self.count+=1
